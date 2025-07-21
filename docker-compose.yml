@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  product-service:
+    build: ./product-service
+    ports:
+      - "8001:8000"
+    environment:
+      - SERVICE_NAME=product-service
+    networks:
+      - ecommerce-network
+
+  cart-service:
+    build: ./cart-service
+    ports:
+      - "8002:8000"
+    environment:
+      - SERVICE_NAME=cart-service
+      - PRODUCT_SERVICE_URL=http://product-service:8000
+    depends_on:
+      - product-service
+    networks:
+      - ecommerce-network
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8003:8000"
+    environment:
+      - SERVICE_NAME=order-service
+      - PRODUCT_SERVICE_URL=http://product-service:8000
+      - CART_SERVICE_URL=http://cart-service:8000
+    depends_on:
+      - product-service
+      - cart-service
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
