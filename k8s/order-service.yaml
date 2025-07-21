@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: ${DOCKER_REGISTRY}/order-service:latest
+        image: franklynux/order-service:latest
         ports:
         - containerPort: 8000
         env:
@@ -44,6 +44,7 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
 ---
+# Service for Order Service
 apiVersion: v1
 kind: Service
 metadata:

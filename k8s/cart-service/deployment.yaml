@@ -41,16 +41,3 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 20
----
-# Service for Cart Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: cart-service
-spec:
-  selector:
-    app: cart-service
-  ports:
-  - port: 8000
-    targetPort: 8000
-  type: ClusterIP

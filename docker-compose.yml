@@ -3,39 +3,36 @@ version: '3'
 services:
   product-service:
     build: ./product-service
+    image: franklynux/product-service:latest
     ports:
       - "8001:8000"
+    volumes:
+      - ./product-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - SERVICE_NAME=product-service
-    networks:
-      - ecommerce-network
+      - PYTHONPATH=/app
 
   cart-service:
     build: ./cart-service
+    image: franklynux/cart-service:latest
     ports:
       - "8002:8000"
+    volumes:
+      - ./cart-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - SERVICE_NAME=cart-service
+      - PYTHONPATH=/app
       - PRODUCT_SERVICE_URL=http://product-service:8000
-    depends_on:
-      - product-service
-    networks:
-      - ecommerce-network
 
   order-service:
     build: ./order-service
+    image: franklynux/order-service:latest
     ports:
       - "8003:8000"
+    volumes:
+      - ./order-service:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
-      - SERVICE_NAME=order-service
+      - PYTHONPATH=/app
+      - CART_SERVICE_URL=http://cart-service:8000dckr_pat_uI5Rta89ZKaaoFTHgSADIwt9cjU
       - PRODUCT_SERVICE_URL=http://product-service:8000
-      - CART_SERVICE_URL=http://cart-service:8000
-    depends_on:
-      - product-service
-      - cart-service
-    networks:
-      - ecommerce-network
-
-networks:
-  ecommerce-network:
-    driver: bridge

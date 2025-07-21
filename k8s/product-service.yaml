@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: product-service
-        image: ${DOCKER_REGISTRY}/product-service:latest
+        image: franklynux/product-service:latest
         ports:
         - containerPort: 8000
         resources:
@@ -39,6 +39,7 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
 ---
+# Service for Product Service
 apiVersion: v1
 kind: Service
 metadata:

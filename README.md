@@ -27,14 +27,20 @@ ecommerce-platform/
 ├── product-service/       # Product management microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
+│   ├── requirements-dev.txt # Development dependencies
+│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── cart-service/         # Shopping cart microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
+│   ├── requirements-dev.txt # Development dependencies
+│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── order-service/        # Order processing microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
+│   ├── requirements-dev.txt # Development dependencies
+│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── k8s/                  # Kubernetes manifests
 │   ├── product-service.yaml
@@ -43,6 +49,7 @@ ecommerce-platform/
 │   └── ingress.yaml      # API Gateway configuration
 ├── argocd/               # ArgoCD configuration
 │   └── application.yaml  # ArgoCD application manifest
+├── run_tests.bat         # Script to run all tests
 └── docker-compose.yml    # Local development setup
 ```
 
@@ -54,6 +61,7 @@ ecommerce-platform/
 - Kubernetes cluster (local or cloud-based)
 - kubectl CLI
 - ArgoCD installed on your Kubernetes cluster
+- Python 3.8+ with pip for running tests
 
 ### Local Development
 
@@ -90,6 +98,12 @@ ecommerce-platform/
    # Create namespace for Ambassador Edge Stack
    kubectl create namespace ambassador
    
+   # Install the Emissary-Ingress CRDs first
+   kubectl apply -f https://app.getambassador.io/yaml/emissary/3.7.0/emissary-crds.yaml
+   
+   # Wait for the CRDs to be established
+   kubectl wait --timeout=90s --for=condition=established crd -l app.kubernetes.io/name=emissary-ingress
+   
    # Install Ambassador Edge Stack
    helm install emissary-ingress datawire/emissary-ingress --namespace ambassador
    
@@ -99,7 +113,11 @@ ecommerce-platform/
 
 3. Deploy using ArgoCD:
    ```bash
-   kubectl apply -f argocd/application.yaml
+   # Deploy the Emissary-Ingress resources
+   kubectl apply -f argocd/emissary-ingress-app.yaml
+   
+   # Deploy the microservices using ApplicationSet
+   kubectl apply -f argocd/applicationset.yaml
    ```
 
 4. Access the API Gateway:
@@ -152,13 +170,43 @@ For monitoring, consider implementing:
 - Grafana for visualization
 - Jaeger for distributed tracing
 
+## Testing
+
+Each microservice includes unit tests to verify API functionality. The tests use pytest and FastAPI's TestClient.
+
+### Running Tests
+
+#### Running All Tests
+
+On Windows:
+```bash
+run_tests.bat
+```
+
+#### Running Tests for a Specific Service
+
+```bash
+cd product-service
+pip install -r requirements.txt -r requirements-dev.txt
+pytest -v
+```
+
+#### Running Tests with Coverage
+
+```bash
+cd product-service
+pip install -r requirements.txt -r requirements-dev.txt
+pytest --cov=. --cov-report=term
+```
+
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+4. Ensure all tests pass (`run_tests.bat`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
 ## License
 

@@ -1,27 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cart-service
+  name: product-service
   labels:
-    app: cart-service
+    app: product-service
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: cart-service
+      app: product-service
   template:
     metadata:
       labels:
-        app: cart-service
+        app: product-service
     spec:
       containers:
-      - name: cart-service
-        image: franklynux/cart-service:latest
+      - name: product-service
+        image: franklynux/product-service:latest
         ports:
         - containerPort: 8000
-        env:
-        - name: PRODUCT_SERVICE_URL
-          value: "http://product-service:8000"
         resources:
           limits:
             cpu: "0.5"
@@ -41,16 +38,3 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 20
----
-# Service for Cart Service
-apiVersion: v1
-kind: Service
-metadata:
-  name: cart-service
-spec:
-  selector:
-    app: cart-service
-  ports:
-  - port: 8000
-    targetPort: 8000
-  type: ClusterIP

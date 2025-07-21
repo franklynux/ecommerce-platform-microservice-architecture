@@ -1,0 +1,6 @@
+.pytest_cache/
+__pycache__/
+.env
+.env.example
+run_tests.bat
+.vscode
