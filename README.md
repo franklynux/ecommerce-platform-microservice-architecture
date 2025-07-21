@@ -27,29 +27,30 @@ ecommerce-platform/
 ├── product-service/       # Product management microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
-│   ├── requirements-dev.txt # Development dependencies
-│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── cart-service/         # Shopping cart microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
-│   ├── requirements-dev.txt # Development dependencies
-│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── order-service/        # Order processing microservice
 │   ├── main.py           # FastAPI application
 │   ├── requirements.txt  # Python dependencies
-│   ├── requirements-dev.txt # Development dependencies
-│   ├── test_main.py     # Unit tests
 │   └── Dockerfile        # Container definition
 ├── k8s/                  # Kubernetes manifests
-│   ├── product-service.yaml
-│   ├── cart-service.yaml
-│   ├── order-service.yaml
-│   └── ingress.yaml      # API Gateway configuration
+│   ├── product-service/  # Product service manifests
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   ├── cart-service/     # Cart service manifests
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   ├── order-service/    # Order service manifests
+│   │   ├── deployment.yaml
+│   │   └── service.yaml
+│   ├── emissary-ingress.yaml  # API Gateway configuration
+│   └── ingress.yaml           # API routing rules
 ├── argocd/               # ArgoCD configuration
-│   └── application.yaml  # ArgoCD application manifest
-├── run_tests.bat         # Script to run all tests
+│   ├── applicationset.yaml    # ApplicationSet for microservices
+│   └── emissary-ingress-app.yaml  # ArgoCD app for API Gateway
 └── docker-compose.yml    # Local development setup
 ```
 
@@ -119,6 +120,12 @@ ecommerce-platform/
    # Deploy the microservices using ApplicationSet
    kubectl apply -f argocd/applicationset.yaml
    ```
+   
+   This will create the following ArgoCD applications:
+   - **product-API**: Deploys the Product Service
+   - **cart-API**: Deploys the Cart Service
+   - **order-API**: Deploys the Order Service
+   - **emissary-ingress**: Deploys the API Gateway
 
 4. Access the API Gateway:
    ```bash

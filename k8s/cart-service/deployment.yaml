@@ -5,7 +5,7 @@ metadata:
   labels:
     app: cart-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: cart-service
@@ -24,11 +24,11 @@ spec:
           value: "http://product-service:8000"
         resources:
           limits:
-            cpu: "0.5"
-            memory: "512Mi"
-          requests:
             cpu: "0.2"
             memory: "256Mi"
+          requests:
+            cpu: "0.1"
+            memory: "128Mi"
         readinessProbe:
           httpGet:
             path: /

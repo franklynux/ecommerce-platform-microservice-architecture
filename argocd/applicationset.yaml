@@ -7,11 +7,11 @@ spec:
   generators:
     - list:
         elements:
-          - name: product-API
+          - name: product-api
             service: product-service
-          - name: cart-API
+          - name: cart-api
             service: cart-service
-          - name: order-API
+          - name: order-api
             service: order-service
   template:
     metadata:
