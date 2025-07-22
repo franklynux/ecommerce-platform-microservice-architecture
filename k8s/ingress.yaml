@@ -4,10 +4,14 @@ metadata:
   name: product-service-mapping
   namespace: emissary
 spec:
-  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
+  hostname: "*"
   prefix: /products/
   service: product-service.ecommerce:8000
-  rewrite: ""
+  timeout_ms: 30000
+  connect_timeout_ms: 10000
+  retry_policy:
+    retry_on: 5xx
+    num_retries: 3
 ---
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
@@ -15,10 +19,14 @@ metadata:
   name: cart-service-mapping
   namespace: emissary
 spec:
-  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
+  hostname: "*"
   prefix: /carts/
   service: cart-service.ecommerce:8000
-  rewrite: ""
+  timeout_ms: 30000
+  connect_timeout_ms: 10000
+  retry_policy:
+    retry_on: 5xx
+    num_retries: 3
 ---
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
@@ -26,7 +34,11 @@ metadata:
   name: order-service-mapping
   namespace: emissary
 spec:
-  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
+  hostname: "*"
   prefix: /orders/
   service: order-service.ecommerce:8000
-  rewrite: ""
+  timeout_ms: 30000
+  connect_timeout_ms: 10000
+  retry_policy:
+    retry_on: 5xx
+    num_retries: 3
