@@ -4,6 +4,7 @@ metadata:
   name: product-service-mapping
   namespace: emissary
 spec:
+  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
   prefix: /products/
   service: product-service.ecommerce:8000
   rewrite: ""
@@ -14,6 +15,7 @@ metadata:
   name: cart-service-mapping
   namespace: emissary
 spec:
+  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
   prefix: /carts/
   service: cart-service.ecommerce:8000
   rewrite: ""
@@ -24,6 +26,7 @@ metadata:
   name: order-service-mapping
   namespace: emissary
 spec:
+  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
   prefix: /orders/
   service: order-service.ecommerce:8000
   rewrite: ""
