@@ -3,6 +3,7 @@ apiVersion: getambassador.io/v3alpha1
 kind: Module
 metadata:
   name: ambassador
+  namespace: emissary
 spec:
   config:
     diagnostics:
@@ -13,6 +14,7 @@ apiVersion: getambassador.io/v3alpha1
 kind: Host
 metadata:
   name: ecommerce-host
+  namespace: emissary
 spec:
   hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
   acmeProvider:
