@@ -46,8 +46,9 @@ ecommerce-platform/
 │   ├── order-service/    # Order service manifests
 │   │   ├── deployment.yaml
 │   │   └── service.yaml
-│   ├── emissary-ingress.yaml  # API Gateway configuration
-│   └── ingress.yaml           # API routing rules
+│   ├── emissary-ingress.yaml  # API Gateway Host configuration
+│   ├── emissary-listener.yaml # API Gateway Listener configuration
+│   └── ingress.yaml           # API Gateway Mapping rules
 ├── argocd/               # ArgoCD configuration
 │   ├── applicationset.yaml    # ApplicationSet for microservices
 │   └── emissary-ingress-app.yaml  # ArgoCD app for API Gateway
@@ -90,14 +91,14 @@ ecommerce-platform/
    sed -i 's/${DOCKER_REGISTRY}/your-registry-url/g' k8s/*.yaml
    ```
 
-2. Install Emissary-Ingress (Ambassador):
+2. Install Emissary-Ingress:
    ```bash
-   # Add the Ambassador Edge Stack Helm repository
+   # Add the Emissary-Ingress Helm repository
    helm repo add datawire https://app.getambassador.io
    helm repo update
    
-   # Create namespace for Ambassador Edge Stack
-   kubectl create namespace ambassador
+   # Create namespace for Emissary-Ingress
+   kubectl create namespace emissary
    
    # Install the Emissary-Ingress CRDs first
    kubectl apply -f https://app.getambassador.io/yaml/emissary/3.7.0/emissary-crds.yaml
@@ -105,12 +106,14 @@ ecommerce-platform/
    # Wait for the CRDs to be established
    kubectl wait --timeout=90s --for=condition=established crd -l app.kubernetes.io/name=emissary-ingress
    
-   # Install Ambassador Edge Stack
-   helm install emissary-ingress datawire/emissary-ingress --namespace ambassador
+   # Install Emissary-Ingress
+   helm install emissary-ingress datawire/emissary-ingress --namespace emissary
    
    # Apply Emissary-Ingress configuration
-   kubectl apply -f k8s/emissary-ingress.yaml
+   kubectl apply -f k8s/emissary-ingress.yaml -f k8s/emissary-listener.yaml -f k8s/ingress.yaml
    ```
+   
+   > **Note**: The Listener resource is critical for Emissary-Ingress v3.x to function properly. Without it, the API Gateway won't have any ports to listen on.
 
 3. Deploy using ArgoCD:
    ```bash
@@ -129,8 +132,8 @@ ecommerce-platform/
 
 4. Access the API Gateway:
    ```bash
-   # Get the external IP or LoadBalancer address of the Ambassador service
-   kubectl get svc -n ambassador
+   # Get the external IP or LoadBalancer address of the Emissary-Ingress service
+   kubectl get svc -n emissary
    
    # Access the services using the external IP or LoadBalancer address:
    # Replace EXTERNAL_IP with the actual IP address
