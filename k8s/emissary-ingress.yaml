@@ -14,7 +14,7 @@ kind: Host
 metadata:
   name: ecommerce-host
 spec:
-  hostname: "*"
+  hostname: ad8155376cc57453bb49c7420d6828d4-1910396888.us-east-1.elb.amazonaws.com
   acmeProvider:
     authority: none
   requestPolicy:
