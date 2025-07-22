@@ -13,7 +13,7 @@ spec:
       include: "emissary-ingress.yaml,ingress.yaml"
   destination:
     server: https://kubernetes.default.svc
-    namespace: ambassador
+    namespace: emissary
   syncPolicy:
     automated:
       prune: true

@@ -1,25 +1,31 @@
+# Product-service mapping
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: product-service-mapping
+  namespace: emissary
 spec:
   prefix: /products/
   service: product-service:8000
   rewrite: ""
 ---
+# Cart-service mapping
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: cart-service-mapping
+  namespace: emissary
 spec:
   prefix: /carts/
   service: cart-service:8000
   rewrite: ""
 ---
+# Order-service mapping
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
 metadata:
   name: order-service-mapping
+  namespace: emissary
 spec:
   prefix: /orders/
   service: order-service:8000

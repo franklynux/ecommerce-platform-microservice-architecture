@@ -1,3 +1,4 @@
+# Module with diagnostics UI enabled
 apiVersion: getambassador.io/v3alpha1
 kind: Module
 metadata:
@@ -7,6 +8,7 @@ spec:
     diagnostics:
       enabled: true
 ---
+# Host using wildcard
 apiVersion: getambassador.io/v3alpha1
 kind: Host
 metadata:
