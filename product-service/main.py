@@ -2,8 +2,11 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 import uuid
+import os
 
-app = FastAPI(title="Product Service API")
+root_path = os.getenv("ROOT_PATH", "")
+
+app = FastAPI(title="Product Service API", root_path=root_path)
 
 # Product model
 class Product(BaseModel):

@@ -22,7 +22,7 @@ Emissary-Ingress v3.x uses a modular architecture with three main components:
 
 - **Host**: Defines the hostname/domain and TLS settings
 - **Listener**: Defines the ports and protocols to listen on
-- **Mapping**: Defines the routing rules for incoming requests
+- **Mapping**: Defines the routing rules for incoming requests and includes CORS configuration for browser access
 
 The Listener resource is particularly important - without it, Emissary-Ingress won't have any ports to listen on and the load balancer won't have any target groups.
 
@@ -34,6 +34,16 @@ For proper deployment:
 2. Install Emissary-Ingress: `helm install emissary-ingress datawire/emissary-ingress --namespace emissary`
 3. Apply the Host and Listener: `kubectl apply -f emissary-ingress.yaml -f emissary-listener.yaml`
 4. Apply the Mappings: `kubectl apply -f ingress.yaml`
+
+## CORS Configuration
+
+The Mapping resources include CORS (Cross-Origin Resource Sharing) configuration to enable:
+
+- Access to the FastAPI interactive documentation UI at `/service/docs`
+- Browser-based applications to make API requests
+- The "Try it out" feature in the Swagger UI
+
+The CORS settings allow requests from any origin (`*`) and include the necessary headers for modern web applications.
 5. Deploy the microservices: Apply the manifests in each service directory
 
 Alternatively, use ArgoCD to manage the deployment as described in the main README.

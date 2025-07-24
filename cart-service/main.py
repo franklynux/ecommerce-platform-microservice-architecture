@@ -3,8 +3,10 @@ from pydantic import BaseModel
 from typing import Dict, List, Optional
 import uuid
 import httpx
+import os
 
-app = FastAPI(title="Cart Service API")
+root_path = os.getenv("ROOT_PATH", "")
+app = FastAPI(title="Cart Service API", root_path=root_path)
 
 # Cart item model
 class CartItem(BaseModel):

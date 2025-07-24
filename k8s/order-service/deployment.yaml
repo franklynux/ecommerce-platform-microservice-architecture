@@ -20,6 +20,8 @@ spec:
         ports:
         - containerPort: 8000
         env:
+        - name: ROOT_PATH
+          value: "/orders"
         - name: PRODUCT_SERVICE_URL
           value: "http://product-service:8000"
         - name: CART_SERVICE_URL

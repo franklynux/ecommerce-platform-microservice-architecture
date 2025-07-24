@@ -82,6 +82,11 @@ ecommerce-platform/
    - Product Service: http://localhost:8001
    - Cart Service: http://localhost:8002
    - Order Service: http://localhost:8003
+   
+   Access the interactive API documentation:
+   - Product Service: http://localhost:8001/docs
+   - Cart Service: http://localhost:8002/docs
+   - Order Service: http://localhost:8003/docs
 
 ### Kubernetes Deployment
 
@@ -141,6 +146,56 @@ ecommerce-platform/
    http://EXTERNAL_IP/carts
    http://EXTERNAL_IP/orders
    ```
+   
+   You can also access the interactive API documentation:
+   ```
+   http://EXTERNAL_IP/products/docs
+   http://EXTERNAL_IP/carts/docs
+   http://EXTERNAL_IP/orders/docs
+   ```
+
+### Building and Pushing Docker Images
+
+To build and push all Docker images to your registry:
+
+```bash
+# Build all images
+docker-compose build
+
+# Push all images to Docker Hub
+docker-compose push
+```
+
+Make sure you're logged into Docker Hub:
+```bash
+docker login
+```
+
+## Configuration
+
+### ROOT_PATH Environment Variable
+
+Each microservice supports a configurable `ROOT_PATH` environment variable that allows the service to be aware of its URL prefix when deployed behind an API Gateway.
+
+**Local Development**: Services run without ROOT_PATH, so APIs and docs are available at the root:
+- API endpoints: `http://localhost:8001/products`
+- Documentation: `http://localhost:8001/docs`
+
+**Kubernetes Deployment**: Services use ROOT_PATH to handle prefixed URLs:
+- API endpoints: `http://EXTERNAL_IP/products/`
+- Documentation: `http://EXTERNAL_IP/products/docs`
+
+The ROOT_PATH is automatically configured in the Kubernetes deployment manifests:
+- Product Service: `ROOT_PATH=/products`
+- Cart Service: `ROOT_PATH=/carts`
+- Order Service: `ROOT_PATH=/orders`
+
+### CORS Configuration
+
+The API Gateway includes CORS (Cross-Origin Resource Sharing) configuration to enable:
+- Access to FastAPI interactive documentation UI
+- Browser-based applications to make API requests
+- "Try it out" functionality in Swagger UI
 
 ## API Documentation
 

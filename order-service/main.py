@@ -5,8 +5,10 @@ from enum import Enum
 import uuid
 import httpx
 from datetime import datetime
+import os
 
-app = FastAPI(title="Order Service API")
+root_path = os.getenv("ROOT_PATH", "")
+app = FastAPI(title="Order Service API", root_path=root_path)
 
 # Order status enum
 class OrderStatus(str, Enum):

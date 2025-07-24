@@ -34,5 +34,5 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       - PYTHONPATH=/app
-      - CART_SERVICE_URL=http://cart-service:8000dckr_pat_uI5Rta89ZKaaoFTHgSADIwt9cjU
+      - CART_SERVICE_URL=http://cart-service:8000
       - PRODUCT_SERVICE_URL=http://product-service:8000

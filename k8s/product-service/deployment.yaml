@@ -19,6 +19,9 @@ spec:
         image: franklynux/product-service:latest
         ports:
         - containerPort: 8000
+        env:
+        - name: ROOT_PATH
+          value: "/products"
         resources:
           limits:
             cpu: "0.2"
