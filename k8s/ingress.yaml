@@ -5,16 +5,8 @@ metadata:
   namespace: emissary
 spec:
   hostname: "*"
-  prefix: /products
-  regex_rewrite:
-    pattern: '/products(/?.*)'
-    substitution: '\1'
+  prefix: /products/
   service: product-service.ecommerce:8000
-  timeout_ms: 30000
-  connect_timeout_ms: 10000
-  retry_policy:
-    retry_on: 5xx
-    num_retries: 3
   cors:
     origins:
       - "*"
@@ -23,30 +15,6 @@ spec:
       - POST
       - PUT
       - DELETE
-      - OPTIONS
-    headers:
-      - Content-Type
-      - Authorization
-    credentials: true
-    exposed_headers:
-      - X-Custom-Header
-    max_age: "86400"
----
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
-metadata:
-  name: product-openapi-mapping
-  namespace: emissary
-spec:
-  hostname: "*"
-  prefix: /products/openapi.json
-  rewrite: /openapi.json
-  service: product-service.ecommerce:8000
-  cors:
-    origins:
-      - "*"
-    methods:
-      - GET
       - OPTIONS
     headers:
       - Content-Type
@@ -60,16 +28,8 @@ metadata:
   namespace: emissary
 spec:
   hostname: "*"
-  prefix: /carts
-  regex_rewrite:
-    pattern: '/carts(/?.*)'
-    substitution: '\1'
+  prefix: /carts/
   service: cart-service.ecommerce:8000
-  timeout_ms: 30000
-  connect_timeout_ms: 10000
-  retry_policy:
-    retry_on: 5xx
-    num_retries: 3
   cors:
     origins:
       - "*"
@@ -78,30 +38,6 @@ spec:
       - POST
       - PUT
       - DELETE
-      - OPTIONS
-    headers:
-      - Content-Type
-      - Authorization
-    credentials: true
-    exposed_headers:
-      - X-Custom-Header
-    max_age: "86400"
----
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
-metadata:
-  name: cart-openapi-mapping
-  namespace: emissary
-spec:
-  hostname: "*"
-  prefix: /carts/openapi.json
-  rewrite: /openapi.json
-  service: cart-service.ecommerce:8000
-  cors:
-    origins:
-      - "*"
-    methods:
-      - GET
       - OPTIONS
     headers:
       - Content-Type
@@ -115,16 +51,8 @@ metadata:
   namespace: emissary
 spec:
   hostname: "*"
-  prefix: /orders
-  regex_rewrite:
-    pattern: '/orders(/?.*)'
-    substitution: '\1'
+  prefix: /orders/
   service: order-service.ecommerce:8000
-  timeout_ms: 30000
-  connect_timeout_ms: 10000
-  retry_policy:
-    retry_on: 5xx
-    num_retries: 3
   cors:
     origins:
       - "*"
@@ -133,30 +61,6 @@ spec:
       - POST
       - PUT
       - DELETE
-      - OPTIONS
-    headers:
-      - Content-Type
-      - Authorization
-    credentials: true
-    exposed_headers:
-      - X-Custom-Header
-    max_age: "86400"
----
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
-metadata:
-  name: order-openapi-mapping
-  namespace: emissary
-spec:
-  hostname: "*"
-  prefix: /orders/openapi.json
-  rewrite: /openapi.json
-  service: order-service.ecommerce:8000
-  cors:
-    origins:
-      - "*"
-    methods:
-      - GET
       - OPTIONS
     headers:
       - Content-Type
