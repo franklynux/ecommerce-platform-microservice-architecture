@@ -6,9 +6,13 @@ import uuid
 import httpx
 from datetime import datetime
 import os
+from prometheus_fastapi_instrumentator import Instrumentator
 
 root_path = os.getenv("ROOT_PATH", "")
 app = FastAPI(title="Order Service API", root_path=root_path)
+
+# Initialize Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 # Order status enum
 class OrderStatus(str, Enum):

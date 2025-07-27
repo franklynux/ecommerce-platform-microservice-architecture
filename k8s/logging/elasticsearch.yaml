@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 100m
+            memory: 1Gi
+        ports:
+        - containerPort: 9200 # HTTP REST API 
+        - containerPort: 9300 # internal node-to-node communication
+        volumeMounts:
+        - name: elasticsearch-data
+          mountPath: /usr/share/elasticsearch/data
+        env:
+        - name: discovery.type
+          value: single-node             # runs as a single-node cluster
+        - name: ES_JAVA_OPTS  
+          value: "-Xms512m -Xmx512m"     # sets Java heap size to 512MB min and max
+        - name: xpack.security.enabled
+          value: "false"                 # disables Elasticsearch's security features (not recommended for production)
+      volumes:
+      - name: elasticsearch-data
+        emptyDir: {}                     # wouldn't persist data on pod restart!
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: logging
+  labels:
+    app: elasticsearch
+spec:
+  ports:
+  - port: 9200
+    protocol: TCP
+    targetPort: 9200
+  selector:
+    app: elasticsearch

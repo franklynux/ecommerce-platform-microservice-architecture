@@ -4,9 +4,13 @@ from typing import Dict, List, Optional
 import uuid
 import httpx
 import os
+from prometheus_fastapi_instrumentator import Instrumentator
 
 root_path = os.getenv("ROOT_PATH", "")
 app = FastAPI(title="Cart Service API", root_path=root_path)
+
+# Initialize Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 # Cart item model
 class CartItem(BaseModel):

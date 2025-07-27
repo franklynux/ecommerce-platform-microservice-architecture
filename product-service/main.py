@@ -3,10 +3,14 @@ from pydantic import BaseModel
 from typing import List, Optional
 import uuid
 import os
+from prometheus_fastapi_instrumentator import Instrumentator
 
 root_path = os.getenv("ROOT_PATH", "")
 
 app = FastAPI(title="Product Service API", root_path=root_path)
+
+# Initialize Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 # Product model
 class Product(BaseModel):

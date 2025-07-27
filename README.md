@@ -2,7 +2,33 @@
 
 This project implements a scalable e-commerce platform using a microservices architecture. The platform consists of several microservices containerized with Docker, deployed to a Kubernetes cluster managed by ArgoCD, and exposed through an API Gateway.
 
+## Table of Contents
+
+- [Architecture Overview](#architecture-overview)
+- [Technology Stack](#technology-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Local Development](#local-development)
+  - [Kubernetes Deployment](#kubernetes-deployment)
+  - [Building and Pushing Docker Images](#building-and-pushing-docker-images)
+- [Configuration](#configuration)
+  - [ROOT_PATH Environment Variable](#root_path-environment-variable)
+  - [CORS Configuration](#cors-configuration)
+- [API Documentation](#api-documentation)
+  - [Product Service](#product-service)
+  - [Cart Service](#cart-service)
+  - [Order Service](#order-service)
+- [Logging and Monitoring](#logging-and-monitoring)
+  - [ELK Stack Setup](#elk-stack-setup)
+  - [Scaling](#scaling)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Architecture Overview
+
+![Architecture Diagram](images/architecture-diagram.png)
 
 The platform is built using the following microservices:
 
@@ -12,13 +38,34 @@ The platform is built using the following microservices:
 
 The services communicate with each other via RESTful APIs and are deployed as independent containers, allowing for scalability and resilience.
 
+### System Architecture
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   API Gateway   │────│  Kubernetes      │────│   ELK Stack     │
+│ (Emissary)      │    │  Cluster         │    │ (Logging)       │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│  Microservices  │    │     ArgoCD       │    │    Kibana       │
+│ - Product       │    │ (GitOps CD)      │    │ (Visualization) │
+│ - Cart          │    │                  │    │                 │
+│ - Order         │    │                  │    │                 │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
+
 ## Technology Stack
 
-- **Backend**: FastAPI (Python)
-- **Containerization**: Docker
-- **Container Orchestration**: Kubernetes
-- **Continuous Deployment**: ArgoCD
-- **API Gateway**: Emissary-Ingress (Ambassador)
+| Component | Technology | Purpose |
+|-----------|------------|----------|
+| **Backend** | FastAPI (Python) | RESTful API development |
+| **Containerization** | Docker | Application packaging |
+| **Orchestration** | Kubernetes | Container management |
+| **CI/CD** | ArgoCD | GitOps deployment |
+| **API Gateway** | Emissary-Ingress | Traffic routing & management |
+| **Logging** | ELK Stack | Log aggregation & visualization |
+| **Monitoring** | Kibana | Dashboard & analytics |
 
 ## Project Structure
 
@@ -46,12 +93,28 @@ ecommerce-platform/
 │   ├── order-service/    # Order service manifests
 │   │   ├── deployment.yaml
 │   │   └── service.yaml
+│   ├── logging/          # ELK Stack for log aggregation
+│   │   ├── elasticsearch.yaml
+│   │   ├── kibana.yaml
+│   │   ├── fluentd-config.yaml
+│   │   └── fluentd-daemonset.yaml
 │   ├── emissary-ingress.yaml  # API Gateway Host configuration
 │   ├── emissary-listener.yaml # API Gateway Listener configuration
 │   └── ingress.yaml           # API Gateway Mapping rules
 ├── argocd/               # ArgoCD configuration
 │   ├── applicationset.yaml    # ApplicationSet for microservices
 │   └── emissary-ingress-app.yaml  # ArgoCD app for API Gateway
+├── images/               # Screenshot placeholders
+│   ├── architecture-diagram.png
+│   ├── local-services.png
+│   ├── k8s-services.png
+│   ├── api-gateway-access.png
+│   ├── elk-deployment.png
+│   ├── kibana-service.png
+│   ├── index-pattern-creation.png
+│   ├── log-discovery.png
+│   ├── dashboard-creation.png
+│   └── argocd-applications.png
 └── docker-compose.yml    # Local development setup
 ```
 
@@ -59,11 +122,16 @@ ecommerce-platform/
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Kubernetes cluster (local or cloud-based)
-- kubectl CLI
-- ArgoCD installed on your Kubernetes cluster
-- Python 3.8+ with pip for running tests
+Ensure you have the following tools installed:
+
+| Tool | Version | Purpose |
+|------|---------|----------|
+| Docker & Docker Compose | Latest | Container runtime |
+| Kubernetes cluster | 1.20+ | Container orchestration |
+| kubectl CLI | Latest | Kubernetes management |
+| ArgoCD | Latest | GitOps deployment |
+| Python | 3.8+ | Running tests |
+| Helm | 3.0+ | Package management |
 
 ### Local Development
 
@@ -87,6 +155,8 @@ ecommerce-platform/
    - Product Service: http://localhost:8001/docs
    - Cart Service: http://localhost:8002/docs
    - Order Service: http://localhost:8003/docs
+
+   ![Local Development Services](images/local-services.png)
 
 ### Kubernetes Deployment
 
@@ -134,12 +204,18 @@ ecommerce-platform/
    - **cart-API**: Deploys the Cart Service
    - **order-API**: Deploys the Order Service
    - **emissary-ingress**: Deploys the API Gateway
+   
+   ![ArgoCD Applications](images/argocd-applications.png)
 
 4. Access the API Gateway:
    ```bash
    # Get the external IP or LoadBalancer address of the Emissary-Ingress service
    kubectl get svc -n emissary
+   ```
    
+   ![Kubernetes Services](images/k8s-services.png)
+   
+   ```bash
    # Access the services using the external IP or LoadBalancer address:
    # Replace EXTERNAL_IP with the actual IP address
    http://EXTERNAL_IP/products
@@ -153,6 +229,8 @@ ecommerce-platform/
    http://EXTERNAL_IP/carts/docs
    http://EXTERNAL_IP/orders/docs
    ```
+   
+   ![API Gateway Access](images/api-gateway-access.png)
 
 ### Building and Pushing Docker Images
 
@@ -201,63 +279,140 @@ The API Gateway includes CORS (Cross-Origin Resource Sharing) configuration to e
 
 ### Product Service
 
-- `GET /products`: List all products
-- `GET /products/{product_id}`: Get a specific product
-- `POST /products/`: Create a new product
-- `PUT /products/{product_id}`: Update a product
-- `DELETE /products/{product_id}`: Delete a product
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/products` | List all products |
+| `GET` | `/products/{product_id}` | Get a specific product |
+| `POST` | `/products/` | Create a new product |
+| `PUT` | `/products/{product_id}` | Update a product |
+| `DELETE` | `/products/{product_id}` | Delete a product |
 
 ### Cart Service
 
-- `POST /carts/`: Create a new cart (requires user_id in request body)
-- `GET /carts/{cart_id}`: Get a specific cart
-- `POST /carts/{cart_id}/items`: Add item to cart
-- `DELETE /carts/{cart_id}/items/{product_id}`: Remove item from cart
-- `DELETE /carts/{cart_id}`: Clear cart
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/carts/` | Create a new cart (requires user_id) |
+| `GET` | `/carts/{cart_id}` | Get a specific cart |
+| `POST` | `/carts/{cart_id}/items` | Add item to cart |
+| `DELETE` | `/carts/{cart_id}/items/{product_id}` | Remove item from cart |
+| `DELETE` | `/carts/{cart_id}` | Clear cart |
 
 ### Order Service
 
-- `POST /orders/`: Create a new order
-- `GET /orders/`: List all orders
-- `GET /orders/{order_id}`: Get a specific order
-- `PUT /orders/{order_id}/status`: Update order status
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/orders/` | Create a new order |
+| `GET` | `/orders/` | List all orders |
+| `GET` | `/orders/{order_id}` | Get a specific order |
+| `PUT` | `/orders/{order_id}/status` | Update order status |
 
-## Monitoring and Scaling
+## Logging and Monitoring
 
-The microservices architecture allows for independent scaling of each service based on demand. Kubernetes provides built-in scaling capabilities:
+### ELK Stack Setup
+
+1. Deploy logging infrastructure:
+   ```bash
+   kubectl create namespace logging
+   kubectl apply -f k8s/logging/
+   ```
+   
+   ![ELK Stack Deployment](images/elk-deployment.png)
+
+2. Access Kibana:
+   ```bash
+   kubectl get svc -n logging kibana
+   # Access via LoadBalancer IP:5601
+   ```
+   
+   ![Kibana Service](images/kibana-service.png)
+
+3. Create index pattern:
+   - Go to **Stack Management** → **Index Patterns**
+   - Create pattern: `kubernetes-*`
+   - Select `@timestamp` as time field
+   
+   ![Index Pattern Creation](images/index-pattern-creation.png)
+
+4. View logs:
+   - Go to **Discover**
+   - Filter: `kubernetes.namespace_name : ecommerce`
+   - Add fields: `kubernetes.container_name`, `log`
+   
+   ![Log Discovery](images/log-discovery.png)
+
+5. Create dashboard:
+   - Go to **Visualize** → Create visualizations
+   - Go to **Dashboard** → Add visualizations
+   
+   ![Dashboard Creation](images/dashboard-creation.png)
+
+### Scaling
 
 ```bash
 kubectl scale deployment product-service --replicas=5
 ```
 
-For monitoring, consider implementing:
-- Prometheus for metrics collection
-- Grafana for visualization
-- Jaeger for distributed tracing
+## CI/CD Pipeline
+
+### GitHub Actions Setup
+
+The project includes automated CI/CD using GitHub Actions that ensures code quality and streamlines deployment.
+
+**Why CI/CD is necessary:**
+- **Quality Assurance**: Automatically runs tests on every code change
+- **Consistency**: Ensures all services are built and deployed uniformly
+- **Speed**: Reduces manual deployment time and human error
+- **Reliability**: Catches issues early before they reach production
+
+**Setup Steps:**
+
+1. **Configure Docker Hub Secrets**:
+   Go to your GitHub repository → Settings → Secrets and variables → Actions
+   
+   Add these repository secrets:
+   ```
+   DOCKER_USERNAME: your-dockerhub-username
+   DOCKER_PASSWORD: your-dockerhub-password-or-token
+   ```
+
+2. **Workflow Triggers**:
+   - Pushes to `main` or `develop` branches
+   - Pull requests to `main` branch
+
+3. **Pipeline Stages**:
+   - **Test**: Runs pytest for all microservices with proper PYTHONPATH
+   - **Build**: Creates Docker images with layer caching for faster builds
+   - **Push**: Uploads images to Docker Hub with `latest` and commit SHA tags
+
+The pipeline runs in parallel for all three services (product, cart, order) using GitHub's matrix strategy.
 
 ## Testing
 
-Each microservice includes unit tests to verify API functionality. The tests use pytest and FastAPI's TestClient.
+Each microservice includes comprehensive unit tests using pytest and FastAPI's TestClient.
+
+### Test Commands
+
+| Command | Description |
+|---------|-------------|
+| `run_tests.bat` | Run all tests (Windows) |
+| `pytest -v` | Run tests for specific service |
+| `pytest --cov=. --cov-report=term` | Run tests with coverage |
 
 ### Running Tests
 
-#### Running All Tests
-
-On Windows:
+**All Services:**
 ```bash
 run_tests.bat
 ```
 
-#### Running Tests for a Specific Service
-
+**Specific Service:**
 ```bash
 cd product-service
 pip install -r requirements.txt -r requirements-dev.txt
 pytest -v
 ```
 
-#### Running Tests with Coverage
-
+**With Coverage:**
 ```bash
 cd product-service
 pip install -r requirements.txt -r requirements-dev.txt
