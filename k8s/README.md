@@ -6,7 +6,19 @@ This directory contains all the Kubernetes manifests needed to deploy the e-comm
 
 Each microservice has its own directory containing:
 - `deployment.yaml`: Defines the Kubernetes Deployment for the service
-- `service.yaml`: Defines the Kubernetes Service for the service
+- `service.yaml`: Defines the Kubernetes Service for the service (includes `monitor: "true"` label for Prometheus scraping)
+
+## Monitoring
+
+The `monitoring/` directory contains:
+- Prometheus and Grafana deployment configurations
+- `servicemonitor.yaml`: Enables Prometheus to scrape metrics from microservices
+
+## Logging
+
+The `logging/` directory contains:
+- Elasticsearch, Fluentd, and Kibana (EFK stack) configurations
+- Centralized logging for all microservices
 
 ## Emissary-Ingress Configuration
 
@@ -35,15 +47,6 @@ For proper deployment:
 3. Apply the Host and Listener: `kubectl apply -f emissary-ingress.yaml -f emissary-listener.yaml`
 4. Apply the Mappings: `kubectl apply -f ingress.yaml`
 
-## CORS Configuration
-
-The Mapping resources include CORS (Cross-Origin Resource Sharing) configuration to enable:
-
-- Access to the FastAPI interactive documentation UI at `/service/docs`
-- Browser-based applications to make API requests
-- The "Try it out" feature in the Swagger UI
-
-The CORS settings allow requests from any origin (`*`) and include the necessary headers for modern web applications.
 5. Deploy the microservices: Apply the manifests in each service directory
 
 Alternatively, use ArgoCD to manage the deployment as described in the main README.
