@@ -37,7 +37,7 @@ A production-ready, scalable e-commerce platform built with microservices archit
 
 ## Architecture Overview
 
-![Architecture Diagram](images/architecture-diagram.png)
+![Architecture Diagram](images/architecture%20diagram.png)
 
 This e-commerce platform implements a cloud-native microservices architecture deployed on Amazon EKS, featuring automated CI/CD, comprehensive monitoring, and centralized logging.
 
@@ -49,8 +49,6 @@ This e-commerce platform implements a cloud-native microservices architecture de
 - **API Gateway**: Routes traffic and provides unified API access
 - **Monitoring Stack**: Prometheus & Grafana for metrics and alerting
 - **Logging Stack**: EFK (Elasticsearch, Fluentd, Kibana) for log aggregation
-
-
 
 ## Technology Stack
 
@@ -128,21 +126,27 @@ ecommerce-platform/
 ## Service Logic Overview
 
 ### Product Service
+
 Manages the product catalog with CRUD operations:
+
 - **Data Model**: Product ID, name, description, price, inventory count
 - **Key Features**: Inventory tracking, price management, product search
 - **Endpoints**: Create, read, update, delete products
 - **Business Logic**: Validates product data, manages stock levels
 
 ### Cart Service
+
 Handles shopping cart operations and user sessions:
+
 - **Data Model**: Cart ID, user ID, items list with quantities
 - **Key Features**: Add/remove items, quantity updates, cart persistence
 - **Endpoints**: Create cart, manage items, clear cart
 - **Business Logic**: Validates product availability, calculates totals
 
 ### Order Service
+
 Processes orders and manages fulfillment workflow:
+
 - **Data Model**: Order ID, user ID, items, status, timestamps
 - **Key Features**: Order creation, status tracking, fulfillment management
 - **Endpoints**: Create order, update status, retrieve order history
@@ -167,12 +171,14 @@ Ensure you have the following tools installed:
 ### Amazon EKS Cluster Setup
 
 1. **Configure AWS CLI**:
+
    ```bash
    aws configure
    # Enter your AWS Access Key ID, Secret Access Key, and region
    ```
 
 2. **Create EKS Cluster**:
+
    ```bash
    # Create cluster with eksctl (takes 15-20 minutes)
    eksctl create cluster \
@@ -185,10 +191,11 @@ Ensure you have the following tools installed:
      --nodes-max 3 \
      --managed
    ```
-   
-   ![EKS Cluster Setup](images/eks-cluster-setup.png)
+
+   ![EKS Cluster Setup](images/EKSCTL%20-%20create%20cluster.png)
 
 3. **Verify Cluster Access**:
+
    ```bash
    kubectl get nodes
    kubectl get namespaces
@@ -197,12 +204,14 @@ Ensure you have the following tools installed:
 ### Local Development Setup
 
 1. **Clone Repository**:
+
    ```bash
    git clone https://github.com/yourusername/ecommerce-platform-microservice-architecture.git
    cd ecommerce-platform-microservice-architecture
    ```
 
 2. **Install Python Dependencies** (for testing):
+
    ```bash
    # For each service
    cd product-service
@@ -214,9 +223,13 @@ Ensure you have the following tools installed:
    cd ..
    ```
 
+   **Expected Output:**
+   ![Python Dependencies Installed](images/local%20dev%20-%20install_require_product.png)
+
 ### Docker Compose Development
 
 1. **Build and Start Services**:
+
    ```bash
    # Build all Docker images
    docker-compose build
@@ -224,10 +237,13 @@ Ensure you have the following tools installed:
    # Start services in detached mode
    docker-compose up -d
    ```
-   
-   ![Docker Compose Services](images/docker-compose-services.png)
+
+   **Expected Output:**
+   This will start the product, cart, and order services on ports 8001, 8002, and 8003 respectively.
+   ![Docker Compose Services](images/docker-compose%20-%20start.png)
 
 2. **Verify Services**:
+
    ```bash
    # Check service status
    docker-compose ps
@@ -235,15 +251,25 @@ Ensure you have the following tools installed:
    # View logs
    docker-compose logs -f
    ```
+   **Expected Output:**
+   ![Docker Compose Logs](images/docker-compose%20-%20logs.png)
 
 3. **Test Services Locally**:
-   - Product Service: http://localhost:8001/docs
-   - Cart Service: http://localhost:8002/docs
-   - Order Service: http://localhost:8003/docs
-   
-   ![Local Development](images/local-development.png)
+   - Product Service: <http://localhost:8001/docs>
+   - Cart Service: <http://localhost:8002/docs>
+   - Order Service: <http://localhost:8003/docs>
+
+   **Product Service Swagger UI:**
+   ![Local Development - product](images/Local%20Dev%20-%20Product%20service_swagger_UI.png)
+
+   **Cart Service Swagger UI:**
+   ![Cart Service Swagger UI](images/Local%20Dev%20-%20cart_service_swagger_UI.png)
+
+   **Order Service Swagger UI:**
+   ![Order Service Swagger UI](images/Local%20Dev%20-%20order_service_swagger_UI.png)
 
 4. **Run Tests**:
+
    ```bash
    # Run all tests
    run_tests.bat
@@ -252,7 +278,11 @@ Ensure you have the following tools installed:
    cd product-service && pytest -v
    ```
 
+   **Expected Output:**
+   ![Local Development - run tests](images/Local%20dev%20-%20Pytest_product.png)
+
 5. **Push Images to Registry**:
+
    ```bash
    # Login to Docker Hub
    docker login
@@ -264,66 +294,79 @@ Ensure you have the following tools installed:
 ## ArgoCD Installation & Configuration
 
 1. **Create ArgoCD Namespace**:
+
    ```bash
    kubectl create namespace argocd
    ```
 
 2. **Install ArgoCD**:
+
    ```bash
    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
    ```
 
 3. **Wait for ArgoCD Pods**:
+
    ```bash
    kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
    ```
 
 4. **Get Initial Admin Password**:
+
    ```bash
    kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
    ```
 
 5. **Access ArgoCD UI**:
+
    ```bash
    # Port forward to access locally
    kubectl port-forward svc/argocd-server -n argocd 8080:443
    ```
-   
-   Access ArgoCD at: https://localhost:8080
+
+   Access ArgoCD at: <https://localhost:8080>
    - Username: `admin`
    - Password: (from step 4)
-   
-   ![ArgoCD UI](images/argocd-ui.png)
+
+   **ArgoCD login:**
+   ![ArgoCD login page](images/ArgoCD%20login%20page.png)
+
+   **ArgoCD UI:**
+   ![ArgoCD UI](images/ArgoCD%20UI.png)
 
 ## Microservices Deployment
 
 ### ApplicationSet Deployment
 
 **Why ApplicationSets?**
+
 - **Scalability**: Manage multiple applications with a single resource
 - **Consistency**: Ensures uniform deployment patterns across services
 - **Automation**: Automatically creates applications based on templates
 - **Maintenance**: Reduces operational overhead for multi-service deployments
 
 1. **Update Docker Registry**:
+
    ```bash
    # Replace placeholder with your Docker Hub username
    sed -i 's/${DOCKER_REGISTRY}/your-dockerhub-username/g' k8s/*.yaml
    ```
 
 2. **Deploy ApplicationSet**:
+
    ```bash
    kubectl apply -f argocd/applicationset.yaml
    ```
-   
+
    This creates three ArgoCD applications:
    - `product-service-app`
-   - `cart-service-app` 
+   - `cart-service-app`
    - `order-service-app`
-   
-   ![ApplicationSet Deployment](images/applicationset-deployment.png)
+
+   ![ApplicationSet Deployment](images/ApplicationSet%20deployment%20-%203%20services%20created.png)
 
 3. **Verify Deployments**:
+
    ```bash
    # Check ArgoCD applications
    kubectl get applications -n argocd
@@ -334,9 +377,13 @@ Ensure you have the following tools installed:
    kubectl get pods -l app=order-service -n ecommerce
    ```
 
+   **Expected Output:**
+   ![Cart Service Pods](images/kubectl%20-%20service_pods_check.png)
+
 ### API Gateway Setup
 
 1. **Install Emissary-Ingress**:
+
    ```bash
    # Add Helm repository
    helm repo add datawire https://app.getambassador.io
@@ -354,35 +401,40 @@ Ensure you have the following tools installed:
    ```
 
 2. **Deploy API Gateway Configuration**:
+
    ```bash
    kubectl apply -f argocd/emissary-ingress-app.yaml
    ```
 
 3. **Access Services via API Gateway**:
+
    ```bash
    # Get external IP
    kubectl get svc -n emissary emissary-ingress
    
-   # Access services (replace EXTERNAL_IP with load balancer address)
+   # Access services (replace EXTERNAL_IP with emissary load balancer address)
    curl http://EXTERNAL_IP/products/
    curl http://EXTERNAL_IP/carts/
    curl http://EXTERNAL_IP/orders/
    ```
-   
-   ![API Gateway Access](images/api-gateway-access.png)
 
-## Configuration
+   **Expected Output:**
+   ![API Gateway Access](images/curl%20-%20ingress_access.png)
+
+## Configuration of ROOT_PATH of Environment Variable
 
 ### ROOT_PATH Environment Variable
 
 The `ROOT_PATH` environment variable enables services to handle URL prefixes correctly when deployed behind an API Gateway.
 
 **Configuration Details**:
+
 - **Purpose**: Allows FastAPI to generate correct OpenAPI schemas and documentation URLs
 - **Local Development**: Not set (services run at root path)
 - **Kubernetes Deployment**: Set to match API Gateway routing
 
 **Implementation**:
+
 ```python
 # In each service's main.py
 import os
@@ -393,6 +445,7 @@ app = FastAPI(root_path=root_path)
 ```
 
 **Kubernetes Configuration**:
+
 ```yaml
 # In deployment manifests
 env:
@@ -401,6 +454,7 @@ env:
 ```
 
 **URL Behavior**:
+
 - **Local**: `http://localhost:8001/docs`
 - **Kubernetes**: `http://EXTERNAL_IP/products/docs`
 
@@ -409,67 +463,78 @@ env:
 ### Prometheus & Grafana Setup
 
 1. **Create Monitoring Namespace**:
+
    ```bash
    kubectl create namespace monitoring
    ```
 
 2. **Deploy Prometheus**:
+
    ```bash
    kubectl apply -f k8s/monitoring/prometheus.yaml
    ```
 
 3. **Deploy Grafana**:
+
    ```bash
    kubectl apply -f k8s/monitoring/grafana.yaml
    ```
 
 4. **Install ServiceMonitor CRD**:
+
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/main/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
    ```
 
 5. **Deploy ServiceMonitor** (for scraping metrics):
+
    ```bash
    kubectl apply -f k8s/monitoring/servicemonitor.yaml
    ```
 
 6. **Access Prometheus UI**:
+
    ```bash
    # Get external IP
    kubectl get svc -n monitoring prometheus
    # Access at http://EXTERNAL_IP:9090
    ```
-   
-   ![Prometheus UI](images/prometheus-ui.png)
+
+   ![Prometheus UI](images/Prometheus%20-%20Dashboard.png)
 
 7. **Access Grafana UI**:
+
    ```bash
    # Get external IP
    kubectl get svc -n monitoring grafana
    # Access at http://EXTERNAL_IP:3000
    # Default credentials: admin/admin
    ```
-   
-   ![Grafana Dashboard](images/grafana-dashboard.png)
+
+   ![Grafana Dashboard](images/Grafana%20UI.png)
 
 ### Key Metrics
 
 **HTTP Request Metrics**:
+
 - `http_requests_total`: Total HTTP requests count
 - `http_request_duration_seconds`: Request duration histogram
 - `http_requests_in_progress`: Current active requests
 
 **System Metrics**:
+
 - `process_cpu_seconds_total`: CPU usage
 - `process_resident_memory_bytes`: Memory usage
 - `process_open_fds`: Open file descriptors
 
 **Custom Business Metrics**:
+
 - `products_created_total`: Products created counter
 - `carts_active_total`: Active shopping carts
 - `orders_processed_total`: Orders processed counter
 
 **Sample Grafana Queries**:
+
 ```promql
 # HTTP Request Rate
 rate(http_requests_total[5m])
@@ -482,41 +547,50 @@ process_resident_memory_bytes / 1024 / 1024
 ```
 
 **Expected Output:**
+
 - **HTTP Request Rate**: Line chart showing request rate over time
-   ![Grafana HTTP Request Rate](images/grafana-http-request-rate.png)
+   ![Grafana HTTP Request Rate](images/Grafana-Visualization%20-%20HTTP%20requests%20count.png)
 
 - **CPU Usage**: Gauge showing CPU percentage per service
-   ![Grafana CPU Usage](images/grafana-cpu-usage.png)
+   ![Grafana CPU Usage](images/Grafana-Visualization%20-%20CPU%20usage.png)
 
 - **Memory Usage**: Bar chart showing memory usage per service
-   ![Grafana Memory Usage](images/grafana-memory-usage.png)
+   ![Grafana Memory Usage](images/Grafana-Visualization%20-%20Memory%20usage.png)
+
+- **Grafana Dashboard**:   
+   ![Grafana Dashboard](images/Grafana-Dashboard-for-ecommerce-metrics.png)
 
 ## Logging Infrastructure
 
 ### EFK Stack Setup
 
 1. **Create Logging Namespace**:
+
    ```bash
    kubectl create namespace logging
    ```
 
 2. **Deploy Elasticsearch**:
+
    ```bash
    kubectl apply -f k8s/logging/elasticsearch.yaml
    ```
 
 3. **Deploy Fluentd DaemonSet**:
+
    ```bash
    kubectl apply -f k8s/logging/fluentd-config.yaml
    kubectl apply -f k8s/logging/fluentd-daemonset.yaml
    ```
 
 4. **Deploy Kibana**:
+
    ```bash
    kubectl apply -f k8s/logging/kibana.yaml
    ```
 
 5. **Verify Deployment**:
+
    ```bash
    kubectl get pods -n logging
    kubectl get svc -n logging
@@ -525,11 +599,14 @@ process_resident_memory_bytes / 1024 / 1024
 ### Kibana Dashboard Configuration
 
 1. **Access Kibana UI**:
+
    ```bash
    # Get external IP
    kubectl get svc -n logging kibana
    # Access at http://EXTERNAL_IP:5601
    ```
+
+   ![Kibana UI](images/Elasticsearch%20UI%20-%20home.png)
 
 2. **Create Index Pattern**:
    - Go to **Stack Management** → **Index Patterns**
@@ -537,27 +614,35 @@ process_resident_memory_bytes / 1024 / 1024
    - Select `@timestamp` as time field
 
 3. **Create "E-commerce Platform Logs Monitor" Dashboard**:
-   
+
    **Log Volume by Namespace**:
    - Visualization Type: Line Chart
    - Metrics: Count
    - Buckets: Date Histogram on @timestamp
    - Split Series: Terms on kubernetes.namespace_name
-   
+
+   ![Kibana Log Volume](images/Kibana%20dashboard%20-%20Log%20Volume%20by%20Namespace.png)
+
    **Logs per Service**:
    - Visualization Type: Pie Chart
    - Metrics: Count
    - Buckets: Terms on kubernetes.container_name
-   
+
+   ![Kibana Logs per Service](images/Kibana%20dashboard%20-%20Logs%20per%20service.png)
+
    **Pod Activity Heat Map**:
    - Visualization Type: Heat Map
    - Metrics: Count
    - X-Axis: Date Histogram on @timestamp
    - Y-Axis: Terms on kubernetes.pod_name
-   
-   ![Kibana Dashboard](images/kibana-dashboard.png)
+
+   ![Kibana Pod Activity Heat Map](images/Kibana%20dashboard%20-%20Pod%20Activity%20Heat%20Map.png)
+
+   **Kibana dashboard showing logs visualizations:**
+   ![Kibana Dashboard](images/Kibana%20dashboard%20-%20Ecommerce%20platform%20log%20monitor.png)
 
 4. **Useful Log Queries**:
+
    ```
    # Filter by service
    kubernetes.container_name: "product-service"
@@ -574,6 +659,7 @@ process_resident_memory_bytes / 1024 / 1024
 ### GitHub Actions Setup
 
 **Why CI/CD is Essential**:
+
 - **Quality Assurance**: Automated testing prevents bugs in production
 - **Consistency**: Standardized build and deployment processes
 - **Speed**: Faster delivery cycles with automated workflows
@@ -583,15 +669,17 @@ process_resident_memory_bytes / 1024 / 1024
 ### Workflow Configuration
 
 1. **Configure Repository Secrets**:
-   
+
    Navigate to: GitHub Repository → Settings → Secrets and Variables → Actions
-   
+
    Add these secrets:
+
    ```
    DOCKER_USERNAME: your-dockerhub-username
    DOCKER_PASSWORD: your-dockerhub-token
    ```
-   ![GitHub Secrets](images/github-secrets.png)
+
+   ![GitHub Secrets](images/GitHub%20Action%20-%20dockerhub%20creds.png)
 
 2. **Workflow Features**:
    - **Parallel Testing**: All services tested simultaneously
@@ -603,11 +691,13 @@ process_resident_memory_bytes / 1024 / 1024
    - Push to `main` branch
 
 4. **Pipeline Stages**:
+
    ```
    Test → Build → Push → Deploy (via ArgoCD)
    ```
-   
-   ![CI/CD Pipeline](images/ci-cd-pipeline.png)
+
+   **Expected output:**
+   ![CI/CD Pipeline](images/GitHub%20Action%20-%20test&build%20services%20success.png)
 
 5. **Monitor Pipeline**:
    - View workflow runs in GitHub Actions tab
@@ -652,6 +742,7 @@ Comprehensive testing strategy using pytest and FastAPI's TestClient.
 ### Test Structure
 
 Each service includes:
+
 - **Unit Tests**: Test individual functions and endpoints
 - **Integration Tests**: Test service interactions
 - **API Tests**: Test HTTP endpoints and responses
@@ -659,6 +750,7 @@ Each service includes:
 ### Running Tests
 
 **All Services**:
+
 ```bash
 # Windows
 run_tests.bat
@@ -668,6 +760,7 @@ run_tests.bat
 ```
 
 **Individual Service**:
+
 ```bash
 cd product-service
 pip install -r requirements.txt -r requirements-dev.txt
@@ -675,10 +768,14 @@ pytest -v
 ```
 
 **With Coverage**:
+
 ```bash
 cd product-service
 pytest --cov=. --cov-report=term-missing
 ```
+
+**Expected Output:**
+![Pytest with cov](images/Local%20dev%20-%20Pytest_with_cov_product.png)
 
 **Test Commands Reference**:
 
@@ -713,6 +810,7 @@ def test_get_products():
 ### Common Issues
 
 **EKS Cluster Access**:
+
 ```bash
 # Update kubeconfig
 aws eks update-kubeconfig --region us-west-2 --name ecommerce-cluster
@@ -722,6 +820,7 @@ kubectl get nodes
 ```
 
 **ArgoCD Password Reset**:
+
 ```bash
 # Delete the secret to reset password
 kubectl -n argocd delete secret argocd-initial-admin-secret
@@ -731,6 +830,7 @@ kubectl -n argocd rollout restart deployment argocd-server
 ```
 
 **Service Not Accessible**:
+
 ```bash
 # Check pod status
 kubectl get pods -l app=product-service
@@ -743,6 +843,7 @@ kubectl get ingress
 ```
 
 **Docker Build Issues**:
+
 ```bash
 # Clear Docker cache
 docker system prune -a
@@ -752,6 +853,7 @@ docker-compose build --no-cache
 ```
 
 **Log Analysis**:
+
 ```bash
 # Check pod logs
 kubectl logs -f deployment/product-service
@@ -763,6 +865,7 @@ kubectl logs -f -n argocd deployment/argocd-server
 ### Performance Optimization
 
 **Scaling Services**:
+
 ```bash
 # Scale individual service
 kubectl scale deployment product-service --replicas=5
@@ -772,6 +875,7 @@ kubectl autoscale deployment product-service --cpu-percent=70 --min=2 --max=10
 ```
 
 **Resource Optimization**:
+
 ```yaml
 # In deployment manifests
 resources:
@@ -783,24 +887,25 @@ resources:
     memory: "512Mi"
 ```
 
-
-
 ## Contributing
 
 ### Development Workflow
 
 1. **Fork and Clone**:
+
    ```bash
    git clone https://github.com/your-username/ecommerce-platform-microservice-architecture.git
    cd ecommerce-platform-microservice-architecture
    ```
 
 2. **Create Feature Branch**:
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 3. **Development Setup**:
+
    ```bash
    # Install dependencies for all services
    cd product-service && pip install -r requirements.txt -r requirements-dev.txt
@@ -809,6 +914,7 @@ resources:
    ```
 
 4. **Make Changes and Test**:
+
    ```bash
    # Run tests
    run_tests.bat
@@ -818,6 +924,7 @@ resources:
    ```
 
 5. **Commit and Push**:
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
