@@ -493,6 +493,10 @@ app = FastAPI(root_path=root_path)
    # Access at http://EXTERNAL_IP:9090
    ```
 
+   **Prometheus External IP:**
+   ![Get Prometheus external IP](images/SVC%20-%20monitoring%20(prom&graf%20ext%20IP).png)
+
+   **Prometheus UI:**
    ![Prometheus UI](images/Prometheus%20-%20Dashboard.png)
 
 7. **Access Grafana UI**:
@@ -503,8 +507,12 @@ app = FastAPI(root_path=root_path)
    # Access at http://EXTERNAL_IP:3000
    # Default credentials: admin/admin
    ```
+   
+   **Grafana External IP:**
+   ![Get Grafana external IP](images/SVC%20-%20monitoring%20(prom&graf%20ext%20IP).png)
 
-   ![Grafana Dashboard](images/Grafana%20UI.png)
+   **Grafana UI:**
+   ![Grafana UI](images/Grafana%20UI.png)
 
 ### Key Metrics
 
