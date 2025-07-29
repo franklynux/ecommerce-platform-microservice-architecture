@@ -108,17 +108,6 @@ ecommerce-platform/
 │   └── workflows/
 │       └── ci-cd.yml         # GitHub Actions pipeline
 ├── images/                   # Documentation screenshots
-│   ├── architecture-diagram.png
-│   ├── eks-cluster-setup.png
-│   ├── local-development.png
-│   ├── docker-compose-services.png
-│   ├── argocd-ui.png
-│   ├── applicationset-deployment.png
-│   ├── api-gateway-access.png
-│   ├── prometheus-ui.png
-│   ├── grafana-dashboard.png
-│   ├── kibana-dashboard.png
-│   └── ci-cd-pipeline.png
 ├── docker-compose.yml        # Local development setup
 └── run_tests.bat            # Test runner script
 ```
@@ -398,6 +387,9 @@ Ensure you have the following tools installed:
    
    # Install Emissary-Ingress
    helm install emissary-ingress datawire/emissary-ingress --namespace emissary
+
+   # Alternatively - Install Emissary without Helm (ensure to install CRDs first):
+   kubectl apply -f https://app.getambassador.io/yaml/emissary/3.7.0/emissary-emissaryns.yaml
    ```
 
 2. **Deploy API Gateway Configuration**:
@@ -419,13 +411,23 @@ Ensure you have the following tools installed:
    ```
 
    **Expected Output:**
-   ![API Gateway Access](images/curl%20-%20ingress_access.png)
 
-## Configuration of ROOT_PATH of Environment Variable
+   ![Get emissary external IP](images/svc%20-%20emissary%20ext%20ip.png)
+
+   ![API Gateway Access using curl](images/curl%20-%20ingress_access.png)
+
+## Configuration of ROOT_PATH in kubernetes deployment manifests
 
 ### ROOT_PATH Environment Variable
 
 The `ROOT_PATH` environment variable enables services to handle URL prefixes correctly when deployed behind an API Gateway.
+
+```yaml
+# In deployment manifests
+env:
+- name: ROOT_PATH
+  value: "/products"  # or /carts, /orders
+```
 
 **Configuration Details**:
 
@@ -442,15 +444,6 @@ from fastapi import FastAPI
 
 root_path = os.getenv("ROOT_PATH", "")
 app = FastAPI(root_path=root_path)
-```
-
-**Kubernetes Configuration**:
-
-```yaml
-# In deployment manifests
-env:
-- name: ROOT_PATH
-  value: "/products"  # or /carts, /orders
 ```
 
 **URL Behavior**:
@@ -605,13 +598,18 @@ process_resident_memory_bytes / 1024 / 1024
    kubectl get svc -n logging kibana
    # Access at http://EXTERNAL_IP:5601
    ```
+   **Kibana External IP:**
+   ![Get Kibana external IP](images/SVC%20-%20logging(kibana%20ext%20IP).png)
 
+   **Kibana UI:**
    ![Kibana UI](images/Elasticsearch%20UI%20-%20home.png)
 
 2. **Create Index Pattern**:
    - Go to **Stack Management** → **Index Patterns**
    - Create pattern: `kubernetes-*`
    - Select `@timestamp` as time field
+
+   ![Kibana Index Pattern](images/Kibana%20dashboard%20-%20create%20index%20pattern.png)
 
 3. **Create "E-commerce Platform Logs Monitor" Dashboard**:
 
@@ -675,10 +673,11 @@ process_resident_memory_bytes / 1024 / 1024
    Add these secrets:
 
    ```
-   DOCKER_USERNAME: your-dockerhub-username
-   DOCKER_PASSWORD: your-dockerhub-token
+   DOCKER_USERNAME: your_dockerhub_username
+   DOCKER_PASSWORD: your_dockerhub_token(PAT) OR your_docker_password
    ```
 
+   **Dockerhub Secret:**
    ![GitHub Secrets](images/GitHub%20Action%20-%20dockerhub%20creds.png)
 
 2. **Workflow Features**:
@@ -766,6 +765,9 @@ cd product-service
 pip install -r requirements.txt -r requirements-dev.txt
 pytest -v
 ```
+
+**Expected Output:**
+![Pytest Output](images/Local%20dev%20-%20Pytest_product.png)
 
 **With Coverage**:
 
@@ -894,7 +896,7 @@ resources:
 1. **Fork and Clone**:
 
    ```bash
-   git clone https://github.com/your-username/ecommerce-platform-microservice-architecture.git
+   git clone https://github.com/franklynux/ecommerce-platform-microservice-architecture.git
    cd ecommerce-platform-microservice-architecture
    ```
 
@@ -967,7 +969,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 6. **Access Services**: Get external IPs and access via API Gateway
 
 For detailed instructions, follow the complete guide above.
-
-**Support**: For questions or issues, please open a GitHub issue or contact the maintainers.
 
 **Documentation**: This README provides comprehensive setup and operational guidance. For API-specific documentation, visit the `/docs` endpoint of each service.
